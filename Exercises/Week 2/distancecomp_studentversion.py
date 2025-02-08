@@ -35,9 +35,6 @@ def pytorchdists(feats0,protos0,device):
   dists = torch.sqrt(X_sq + Y_sq.T - crossterm)
   return dists
   
-  #YOUR implementation here
-
-
 def run():
 
   ########
@@ -49,6 +46,7 @@ def run():
   feats=np.random.normal(size=(5000,300)) #5000 instead of 250k for forloopdists
   protos=np.random.normal(size=(500,300))
 
+  # Naive looping (NB! will take in excess of 300 secs!)
   since = time.time()
   dists0=forloopdists(feats,protos)
   forloopdists(feats, protos)
@@ -56,13 +54,17 @@ def run():
   print(line, '\nNaive looping: Computation complete in {:.3f}s'.format( time_elapsed ))
   print(dists0.shape)
 
-  feats=np.random.normal(size=(250000,300)) #5000 instead of 250k for forloopdists
+
+  feats=np.random.normal(size=(250000,300)) #changing to a bigger feats-matrix
+
+  # Numpy-implementation
   since = time.time()
   dists2=numpydists(feats,protos)
   time_elapsed=float(time.time()) - float(since)
   print(line, '\nNumpy: Computation complete in {:.3f}s'.format( time_elapsed ))
   print(dists2.shape)
 
+  # Torch-implementation with CPU and GPU (Cuda) usage
   devices = [torch.device('cpu'), torch.device('cuda')]
 
   for device in devices:
