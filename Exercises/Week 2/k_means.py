@@ -1,13 +1,14 @@
 from distancecomp_studentversion import pytorchdists
 import numpy as np
 import torch
+import matplotlib.pyplot as plt
 
 def create_data(P, k, device):
     data = []
     labels = []
     for p in range(P): # iterates for the number of clusters we need
-        mean = np.random.randn(2) # gives us the centre for the cluster
-        cluster_data = torch.normal(mean=torch.tensor(mean, dtype=torch.float32).expand(k, 2), std=0.1) # generates k points by drawing from a normal distribution
+        mean = np.random.uniform(-1, 1, size=2) # gives us the centre for the cluster
+        cluster_data = torch.normal(mean=torch.tensor(mean, dtype=torch.float32).expand(k, 2), std=0.5) # generates k points by drawing from a normal distribution
         data.append(cluster_data)
         labels.append(torch.full((k,), p)) # creates a long tensor with the labels for each cluster
 
@@ -38,16 +39,42 @@ def k_means(X, P, M, device):
     
     return centers, labels
 
-if __name__ == '__main__':
-    P = 8  # Antall klynger
-    k = 50  # Punkter per klynge
-    M = 10  # Maks iterasjoner
-    device = torch.device('cuda')
+def plot_clusters(X, labels, centers, filename):
+    X_np = X.cpu().numpy() # moving to cpu again and converting to numpy for plotting
+    labels_np = labels.cpu().numpy() # likewise with these
+    centers_np = centers.cpu().numpy()
 
-    # Generer data
+    plt.figure(figsize=(8, 6))
+
+    # plotting the points with color based on cluster
+    plt.scatter(X_np[:, 0], X_np[:, 1], c=labels_np, cmap='tab10', s=10, alpha=0.6)
+    
+    # plotting cluster centers
+    plt.scatter(centers_np[:, 0], centers_np[:, 1], c='red', marker='x', s=100, label='Cluster Centers')
+
+    plt.xlabel('X1')
+    plt.ylabel('X2')
+    plt.title('k-Means Clustering')
+    plt.legend()
+
+    # saving figure
+    plt.savefig(filename, dpi=300)
+    print(f"Plot saved as {filename}")
+    plt.close()
+
+if __name__ == '__main__':
+    P = 8  # clusters
+    k = 50  # points per cluster
+    M = 10  # max iterations
+    device = torch.device('cuda')
+    filename = 'k_means.png'
+
+    # creating data
     X, Y = create_data(P, k, device)
     print("Data shape:", X.shape, Y.shape)
 
     centers, labels = k_means(X, P, M, device)
     print("Centers:", centers)
     print("Labels shape:", labels.shape)
+
+    plot_clusters(X, labels, centers, filename)
