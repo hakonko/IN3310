@@ -1,4 +1,4 @@
-import os,sys,numpy as np
+import numpy as np
 import torch
 import time
 
@@ -25,8 +25,8 @@ def numpydists(feats,protos):
   return dists
   
 def pytorchdists(feats0,protos0,device):
-  feats = torch.tensor(feats0, dtype=torch.float32, device=device)
-  protos = torch.tensor(protos0, dtype=torch.float32, device=device)
+  feats = feats0.clone().detach().to(device, dtype=torch.float32)
+  protos = protos0.clone().detach().to(device, dtype=torch.float32)
 
   X_sq = torch.sum(feats**2, dim=1, keepdim=True)
   Y_sq = torch.sum(protos**2, dim=1, keepdim=True)
@@ -54,22 +54,21 @@ def run():
   print(line, '\nNaive looping: Computation complete in {:.3f}s'.format( time_elapsed ))
   print(dists0.shape)
 
-
   feats=np.random.normal(size=(250000,300)) #changing to a bigger feats-matrix
 
   # Numpy-implementation
   since = time.time()
-  dists2=numpydists(feats,protos)
+  dists1=numpydists(feats,protos)
   time_elapsed=float(time.time()) - float(since)
   print(line, '\nNumpy: Computation complete in {:.3f}s'.format( time_elapsed ))
-  print(dists2.shape)
+  print(dists1.shape)
 
   # Torch-implementation with CPU and GPU (Cuda) usage
   devices = [torch.device('cpu'), torch.device('cuda')]
 
   for device in devices:
     since = time.time()
-    dist=pytorchdists(feats,protos,device)
+    dist = pytorchdists(torch.tensor(feats, dtype=torch.float32), torch.tensor(protos, dtype=torch.float32), device) # changed to be able to use pytorchdist in k_means
     time_elapsed=float(time.time()) - float(since)
     print(line, f'\nTorch with {device.type}: Computation complete in {time_elapsed:.3f}s')
     print(dist.shape)
