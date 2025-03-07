@@ -1,188 +1,135 @@
 from pathlib import Path
-import shutil
-from sklearn.model_selection import train_test_split
 
+import ResNet
+from ResNetData import ResNetDataPreprocessor, ResNetDataset
+from ResNetTrain import *
+from plotting import plot_map_per_class, plot_train_val_loss
+
+import numpy as np
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader, Dataset
-from torchvision import datasets, transforms
-
 import torch.optim as optim
-from ResNet import ResNet
+from torch.utils.data import DataLoader
+from torchvision import transforms
 
-from sklearn.metrics import accuracy_score, average_precision_score
+import torchvision.models as models
 
+device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+torch.cuda.empty_cache()
+torch.cuda.memory_allocated(device=0)  # Se hvor mye minne PyTorch bruker
 
-def create_data():
-    dataset = Path('/mnt/e/ml_projects/IN3310/2025/tut_data/mandatory1_data/')
+def set_seed(seed):
 
-    classes = [str(subdir.parts[-1]) for subdir in dataset.iterdir() if subdir.is_dir()]
+    np.random.seed(seed)  # NumPy
+    torch.manual_seed(seed)  # PyTorch CPU
+    torch.cuda.manual_seed(seed)  # PyTorch GPU
 
-    base_path = Path('/mnt/e/ml_projects/IN3310/2025/tut_data/oblig1/')
+set_seed(42)
 
-    # the directories we want to create
-    dirs = ['train', 'val', 'test']
+##### Creating data (and verifying no updates) ######
 
-    for dir_name in dirs:
-        # creating a path string
-        dir_path = base_path / dir_name
-        dir_path.mkdir(parents=True, exist_ok=True) # creating directory
+DATASET_PATH = Path('/mnt/e/ml_projects/IN3310/2025/tut_data/mandatory1_data/')
+BASE_PATH = Path('/mnt/e/ml_projects/IN3310/2025/tut_data/oblig1/')
+SOFTMAX_CSV = "saved_softmax_scores.csv"
+SOFTMAX_CSV_PRE = "pretrained_softmax_scores.csv"
+MODEL_PATH = '/mnt/e/ml_projects/IN3310/2025/tut_data/oblig1/resnet1.pth'
 
-        # creating subdirectories of class names
-        for class_name in classes:
-            class_path = base_path / dir_name / class_name
-            class_path.mkdir(parents=True, exist_ok=True)
+print("Creating data.")
+preprocessor = ResNetDataPreprocessor(dataset_path=DATASET_PATH, base_path=BASE_PATH)
 
-        img_paths = [] # container for image paths
-        class_indices = [] # container for class indices
+##### Defining transforms ######
+transform = transforms.Compose([
+    transforms.Resize((150, 150)),
+    transforms.ToTensor(),
+    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+])
 
-        for class_index, class_name in enumerate(classes):
-            class_path = dataset / class_name
-            for img_file in class_path.iterdir():
-                if img_file.is_file():
-                    img_paths.append(img_file)
-                    class_indices.append(class_index)
+# data augmentation parameters
+augm_transform = transforms.Compose([
+    transforms.RandomResizedCrop(150, scale=(0.8, 1.0)),
+    transforms.RandomHorizontalFlip(p=0.5),
+    transforms.RandomRotation(15),
+    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
+    transforms.ToTensor(),
+    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+])
 
-        train_imgs, temp_imgs, train_indices, temp_indices = train_test_split(
-        img_paths, class_indices, test_size=0.3, stratify=class_indices, random_state=42
-        )
+# Creating data sets
+train_dataset = ResNetDataset(preprocessor.annotations_file, BASE_PATH, split='train', transform=transform)
+train_dataset_augm = ResNetDataset(preprocessor.annotations_file, BASE_PATH, split='train', transform=transform, augm_transform=augm_transform)
+val_dataset = ResNetDataset(preprocessor.annotations_file, BASE_PATH, split='val', transform=transform)
+test_dataset = ResNetDataset(preprocessor.annotations_file, BASE_PATH, split='test', transform=transform)
 
-        val_imgs, test_imgs, val_indices, test_indices = train_test_split(
-        temp_imgs, temp_indices, test_size=0.6, stratify=temp_indices, random_state=42
-        )
+# Creating DataLoaders
+train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+train_loader_augm = DataLoader(train_dataset_augm, batch_size=32, shuffle=True)
+val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
+test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
-        copy_images(train_imgs, train_indices, 'train')
-        copy_images(val_imgs, val_indices, 'val')
-        copy_images(test_imgs, test_indices, 'test')
+# #### Setting up the training ######
+print("\nStarting training of model: ResNet34, CrossEntropyLoss, Adam, lr: 0.001, basic transforms")
+class_names = preprocessor.get_class_names()
+criterion = nn.CrossEntropyLoss()
+model = ResNet(img_channels=3, num_layers=34, num_classes=len(class_names))
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+file_path = '/mnt/e/ml_projects/IN3310/2025/tut_data/oblig1/resnet1.pth'
+train_acc1, val_acc1, map_scores1, class_accs1, train_losses1, val_losses1 = train_model(model, train_loader, val_loader, criterion, optimizer, file_path, num_epochs=20)
 
-        return train_imgs, train_indices, val_imgs, val_indices, test_imgs, test_indices
+# print("\nStarting training of model: ResNet34, CrossEntropyLoss, Adam, lr: 0.001, augmented transforms")
+# criterion = nn.CrossEntropyLoss()
+# model = ResNet(img_channels=3, num_layers=34, num_classes=len(class_names))
+# optimizer = optim.Adam(model.parameters(), lr=0.001)
+# file_path = '/mnt/e/ml_projects/IN3310/2025/tut_data/oblig1/resnet2.pth'
+# train_acc2, val_acc2, map_scores2, class_accs2, train_losses2, val_losses2 = train_model(model, train_loader_augm, val_loader, criterion, optimizer, file_path, num_epochs=15)
 
+# print("\nStarting training of model: ResNet34, CrossEntropyLoss, SGD, lr: 0.005, basic transforms")
+# criterion = nn.CrossEntropyLoss()
+# model = ResNet(img_channels=3, num_layers=34, num_classes=len(class_names))
+# optimizer = optim.SGD(model.parameters(), lr=0.005)
+# file_path = '/mnt/e/ml_projects/IN3310/2025/tut_data/oblig1/resnet3.pth'
+# train_acc3, val_acc3, map_scores3, class_accs3, train_losses3, val_losses3 = train_model(model, train_loader, val_loader, criterion, optimizer, file_path, num_epochs=15)
+# print("Finished training.)
 
-def copy_images(img_paths, class_indices, split_name):
-    
-    for img_path, class_index in zip(img_paths, class_indices):
-        target_dir = base_path / split_name / classes[class_index]
-        target_file = target_dir / img_path.name
+##### Plotting ######
+plot_map_per_class(class_names, class_accs1, map_scores1, BASE_PATH, 'plot_map_scores1.png')
+plot_train_val_loss(train_losses1, val_losses1, BASE_PATH, 'plot_train_val_loss1.png')
+print('Plots saved.')
 
-        # copying the file if it's not already there
-        if not target_file.exists():
-            shutil.copy(img_path, target_file)
+##### Predicting on model and saving softmax results #####
+print("Finished training. Predicting on best model")
 
-def verify_no_duplicates(train_imgs, val_imgs, test_imgs):
-    train_set = set(train_imgs)
-    val_set = set(val_imgs)
-    test_set = set(test_imgs)
+model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
+model = model.to(device)
 
-    # using intersection to check for data overlaps
-    assert len(train_set.intersection(val_set)) == 0, 'Overlap between Train and Val'
-    assert len(train_set.intersection(test_set)) == 0, 'Overlap between Train and Test'
-    assert len(val_set.intersection(test_set)) == 0, 'Overlap between Val and Test'
+predict(model, test_loader, SOFTMAX_CSV)
+evaluate_on_test_set(model, test_loader, criterion)
+compare_softmax(SOFTMAX_CSV, model, test_loader)
 
-def train_model(model, train_loader, val_loader, criterion, optimizer, lr, num_epochs=10):
-    model = model.to(device)
-    optimizer = optimizer(model.parameters(), lr=lr)
+###### Using Pretrained Model ######
+print("Loading pretrained model")
+model = models.resnet34(pretrained=True)
 
-    train_accs = []
-    val_accs = []
+# changing the output layer
+num_classes = len(class_names)
+model.fc = nn.Linear(model.fc.in_features, num_classes)
+model = model.to(device)
 
-    for epoch in range(num_epochs):
-        model.train() # putting model into training mode
-        running_loss = 0.0
-        correct = 0
-        total = 0
+# setting loss function and optimizer
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
-        for images, labels in train_loader:
-            images, labels = images.to(device), labels.to(device)
+# training
+print("Starting training on pretrained model: ResNet34, CrossEntropyLoss, Adam, lr: 0.0001, basic transforms")
+train_accs0, val_accs0, map_scores0, class_accs0, train_losses0, val_losses0 = train_model(
+    model, train_loader, val_loader, criterion, optimizer, "pretrained_resnet34.pth", num_epochs=10, early_stopping=5
+)
 
-            optimizer.zero_grad() # zeroing out the optimizer
-            
-            outputs = model(images)
-            
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
+# plotting
+plot_map_per_class(class_names, class_accs0, map_scores0, BASE_PATH, 'plot_map_scores0.png')
+plot_train_val_loss(train_losses0, val_losses0, BASE_PATH, 'plot_train_val_loss0.png')
+print('Plots saved.')
 
-            running_loss += loss.item()
-            _, preds = torch.max(outputs, 1)
-            correct += (preds == labels).sum().item()
-            total += labels.size(0)
-
-        train_accuracy = correct / total
-        val_accuracy, _, _ = evaluate_model(model, val_loader)
-
-        train_accs.append(train_accuracy)
-        val_accs.append(val_accuracy)
-
-        print(f"Epoch {epoch+1}/{num_epochs}, Train Accuracy: {train_accuracy:.4f}, Val Accuracy: {val_accuracy:.4f}")
-
-    return train_accs, val_accs
-
-        
-def evaluate_model(model, dataloader):
-    model.eval() # put model in evaluation mode
-
-    all_preds = []
-    all_labels = []
-    all_probs = []
-
-    with torch.no_grad():
-        for images, labels in dataloader:
-            images, labels = images.to(device), labels.to(device)
-            outputs = model(images)
-
-            probs = torch.softmax(outputs, dim=1)
-            _, preds = torch.max(outputs, 1)
-
-            all_preds.append(preds.cpu())
-            all_labels.append(labels.cpu())
-            all_probs.append(probs.cpu())
-
-    all_preds = torch.cat(all_preds)
-    all_labels = torch.cat(all_labels)
-    all_probs = torch.cat(all_probs)
-
-    accuracy = accuracy_score(all_labels, all_preds)
-
-    ap_scores = []
-    for i in range(all_probs.shape[1]):
-        binary_labels = (all_labels == i).float()
-
-        ap = average_precision_score(
-            binary_labels.cpu().numpy(),
-            all_probs[:, i].cpu().numpy()
-        )
-        ap_scores.append(ap)
-
-    map_score = sum(ap_scores) / len(ap_scores)
-    
-    return accuracy, ap_scores, map_score
-
-
-
-if __name__ == "__main__":
-    
-    base_path = Path('/mnt/e/ml_projects/IN3310/2025/tut_data/oblig1/')
-    
-    device = torch.device('cuda') if torch.cuda.is_available else 'cpu'
-
-    train_imgs, train_indices, val_imgs, val_indices, test_imgs, test_indices = create_data()
-    verify_no_duplicates(train_imgs, val_imgs, test_imgs)
-
-    train_dataset = datasets.ImageFolder(root=base_path / 'train', transform=transform)
-    val_dataset = datasets.ImageFolder(root=base_path / 'val', transform=transform)
-    test_dataset = datasets.ImageFolder(root=base_path / 'test', transform=transform)
-
-    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
-    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
-
-
-    transform = transforms.Compose([
-        transforms.Resize((150, 150)),
-        transforms.ToTensor(), # converts to a torch tensor
-        transforms.Normalize((0.5,), (0.5,)) # normalizes to [-1, 1]
-    ])
-
-    criterion = nn.CrossEntropyLoss()
-    model = ResNet(img_channels=3, num_layers=34, num_classes=len(classes))
-    train_acc2, val_acc2 = train_model(model, train_loader, val_loader, criterion, optim.Adam, 0.001, 20)
+print("Finished training. Predicting on model")
+predict(model, test_loader, SOFTMAX_CSV_PRE)
+evaluate_on_test_set(model, test_loader, criterion)
+compare_softmax(SOFTMAX_CSV_PRE, model, test_loader)
