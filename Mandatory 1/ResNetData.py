@@ -63,7 +63,7 @@ class ResNetDataPreprocessor:
         assert len(train_set.intersection(test_set)) == 0, 'Overlap between Train and Test'
         assert len(val_set.intersection(test_set)) == 0, 'Overlap between Val and Test'
 
-        print('Success! Train, validation and test sets are disjoint.')
+        print('Success! Train, validation and test sets are disjoint')
 
     def get_class_names(self):
         return self.class_names

@@ -62,7 +62,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, file_path
 
         # stopping if no improvement
         if epochs_no_improvement == early_stopping:
-            print(f"Early stopping! No improvement in mAP on {epochs_no_improvement} epochs.")
+            print(f"Early stopping! No improvement in mAP score over {epochs_no_improvement} epochs")
             break
 
     return train_accs, val_accs, map_scores, class_accs, train_losses, val_losses

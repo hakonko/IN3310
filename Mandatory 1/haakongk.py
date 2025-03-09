@@ -3,6 +3,7 @@ from pathlib import Path
 import ResNet
 from ResNetData import ResNetDataPreprocessor, ResNetDataset
 from ResNetTrain import *
+from FeatureAnalysis import FeatureMapExtractor, SparcityAnalyzer
 from plotting import plot_map_per_class, plot_losses
 
 import numpy as np
@@ -31,8 +32,10 @@ BASE_PATH = Path('/mnt/e/ml_projects/IN3310/2025/tut_data/oblig1/')
 SOFTMAX_CSV = "saved_softmax_scores.csv"
 SOFTMAX_CSV_PRE = "pretrained_softmax_scores.csv"
 MODEL_PATH = '/mnt/e/ml_projects/IN3310/2025/tut_data/oblig1/resnet1.pth'
+linspc = '—' * 120
 
-print("Creating data.")
+print(linspc)
+print("Creating data")
 preprocessor = ResNetDataPreprocessor(dataset_path=DATASET_PATH, base_path=BASE_PATH)
 
 ##### Defining transforms ######
@@ -66,9 +69,9 @@ test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
 
 ##### Training three models #####
-
 ##### Model 1 #####
-print("\nStarting training of model 1/3: ResNet34, CrossEntropyLoss, Adam, lr: 0.001, basic transforms")
+print(linspc)
+print("Starting training of model 1/3: ResNet34, CrossEntropyLoss, Adam, lr: 0.001, basic transforms\n")
 class_names = preprocessor.get_class_names()
 criterion = nn.CrossEntropyLoss()
 model = ResNet(img_channels=3, num_layers=34, num_classes=len(class_names))
@@ -77,7 +80,8 @@ file_path = '/mnt/e/ml_projects/IN3310/2025/tut_data/oblig1/resnet1.pth'
 train_accs1, val_acc1, map_scores1, class_accs1, train_losses1, val_losses1 = train_model(model, train_loader, val_loader, criterion, optimizer, file_path, num_epochs=20)
 
 ##### Model 2 #####
-print("\nStarting training of model 2/3: ResNet34, CrossEntropyLoss, Adam, lr: 0.001, augmented transforms")
+print(linspc)
+print("Starting training of model 2/3: ResNet34, CrossEntropyLoss, Adam, lr: 0.001, augmented transforms\n")
 criterion = nn.CrossEntropyLoss()
 model = ResNet(img_channels=3, num_layers=18, num_classes=len(class_names))
 optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -85,7 +89,8 @@ file_path = '/mnt/e/ml_projects/IN3310/2025/tut_data/oblig1/resnet2.pth'
 train_acc2, val_acc2, map_scores2, class_accs2, train_losses2, val_losses2 = train_model(model, train_loader_augm, val_loader, criterion, optimizer, file_path, num_epochs=20)
 
 ##### Model 3 #####
-print("\nStarting training of model 3/3: ResNet34, CrossEntropyLoss, SGD, lr: 0.005, basic transforms")
+print(linspc)
+print("Starting training of model 3/3: ResNet34, CrossEntropyLoss, SGD, lr: 0.005, basic transforms\n")
 criterion = nn.CrossEntropyLoss()
 model = ResNet(img_channels=3, num_layers=34, num_classes=len(class_names))
 optimizer = optim.SGD(model.parameters(), lr=0.005)
@@ -101,6 +106,7 @@ val_losses = [val_losses1, val_losses2, val_losses3]
 best_map_scores = [np.max(map_scores1), np.max(map_scores2), np.max(map_scores3)]
 best_model = np.argmax(best_map_scores)
 
+print(linspc)
 print(f"Finished training. The best model was number {best_model + 1}, with mAP-score {np.max(best_map_scores):.4f}")
 
 ##### Plotting ######
@@ -109,8 +115,8 @@ plot_losses(BASE_PATH, f'plot_train_val_loss{best_model + 1}.png', train_losses[
 print('Training/Val plots saved.')
 
 ##### Predicting on model and saving softmax results #####
-print("Finished training. Predicting on best model")
-
+print(linspc)
+print("Predicting on best model")
 model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
 model = model.to(device)
 predict_softmax(model, test_loader, SOFTMAX_CSV)
@@ -118,8 +124,9 @@ evaluate_on_test_set(model, test_loader, criterion)
 compare_softmax(SOFTMAX_CSV, model, test_loader)
 
 ###### Using Pretrained Model ######
+print(linspc)
 print("Loading pretrained model")
-model = resnet34(weigths = ResNet34_Weights.DEFAULT)
+model = resnet34(weights = ResNet34_Weights.DEFAULT)
 
 # changing the output layer to fit our classes
 num_classes = len(class_names)
@@ -128,20 +135,46 @@ model = model.to(device)
 
 # setting loss function and optimizer
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.0001)
+optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 # training
-print("Starting training on pretrained model: ResNet34, CrossEntropyLoss, Adam, lr: 0.0001, basic transforms")
+print(linspc)
+print("Starting training on pretrained model: ResNet34, CrossEntropyLoss, Adam, lr: 0.001, basic transforms")
 train_accs0, val_accs0, map_scores0, class_accs0, train_losses0, val_losses0 = train_model(
     model, train_loader, val_loader, criterion, optimizer, "pretrained_resnet34.pth", num_epochs=10)
 
 # plotting
 plot_map_per_class(class_names, class_accs0, map_scores0, BASE_PATH, 'plot_map_scores0.png')
 plot_losses(BASE_PATH, 'plot_train_val_loss0.png', train_losses0, val_losses0)
-
 print('Plots saved.')
 
+print(linspc)
 print("Finished training. Predicting on model")
 predict_softmax(model, test_loader, SOFTMAX_CSV_PRE)
 evaluate_on_test_set(model, test_loader, criterion)
 compare_softmax(SOFTMAX_CSV_PRE, model, test_loader)
+
+###### Feature Analysis ######
+print(linspc)
+print("Feature analysis pre-test: Extracting feature maps")
+# Setup data
+test_loader = DataLoader(test_dataset, batch_size=1, shuffle=True)
+
+# Extract feature maps
+layer_names = ['layer1', 'layer3', 'layer4']
+extractor = FeatureMapExtractor(model, layer_names)
+feature_maps = extractor.extract_feature_maps(test_loader, num_images=5)
+extractor.cleanup()
+
+# Analyze activations
+print(linspc)
+print("Performing feature analysis")
+module_names = ['layer1.0.relu', 'layer2.0.relu', 'layer3.0.relu', 'layer4.0.relu', 'relu']
+test_loader = DataLoader(test_dataset, batch_size=1, shuffle=True)
+analyzer = SparcityAnalyzer(model, module_names)
+feature_stats = analyzer.analyze_activations(test_loader)
+analyzer.print_statistics()
+analyzer.cleanup()
+
+print(linspc)
+print("Program ended successfully")
