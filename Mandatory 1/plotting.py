@@ -27,17 +27,18 @@ def plot_map_per_class(classes, class_accs, map_scores, base_path, file_name, fi
     plt.close()
 
 
-def plot_train_val_loss(train_losses, val_losses, file_path, file_name, figsize=(10, 5)):
+def plot_losses(file_path, file_name, train_losses, val_losses=None, figsize=(10, 5), labels=["Train losses", "Validation losses"], title="Train/Validation Loss Plot"):
 
     save_path = file_path / file_name
 
     epochs = range(1, len(train_losses) + 1)
     plt.figure(figsize=figsize)
-    plt.plot(epochs, train_losses, label="Train Losses")
-    plt.plot(epochs, val_losses, label="Validation Losses")
+    plt.plot(epochs, train_losses, label=labels[0])
+    if val_losses:
+        plt.plot(epochs, val_losses, label=labels[1])
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
-    plt.title("Train vs. Validation Loss")
+    plt.title(title)
     plt.legend()
     plt.savefig(save_path)
     plt.close()

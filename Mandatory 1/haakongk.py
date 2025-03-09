@@ -3,7 +3,7 @@ from pathlib import Path
 import ResNet
 from ResNetData import ResNetDataPreprocessor, ResNetDataset
 from ResNetTrain import *
-from plotting import plot_map_per_class, plot_train_val_loss
+from plotting import plot_map_per_class, plot_losses
 
 import numpy as np
 import torch
@@ -105,8 +105,8 @@ print(f"Finished training. The best model was number {best_model + 1}, with mAP-
 
 ##### Plotting ######
 plot_map_per_class(class_names, class_accs[best_model], map_scores[best_model], BASE_PATH, f'plot_map_scores{best_model + 1}.png')
-plot_train_val_loss(train_losses[best_model], val_losses[best_model], BASE_PATH, f'plot_train_val_loss{best_model + 1}.png')
-print('Plots saved.')
+plot_losses(BASE_PATH, f'plot_train_val_loss{best_model + 1}.png', train_losses[best_model], val_losses[best_model], figsize=(10, 5))
+print('Training/Val plots saved.')
 
 ##### Predicting on model and saving softmax results #####
 print("Finished training. Predicting on best model")
@@ -137,7 +137,8 @@ train_accs0, val_accs0, map_scores0, class_accs0, train_losses0, val_losses0 = t
 
 # plotting
 plot_map_per_class(class_names, class_accs0, map_scores0, BASE_PATH, 'plot_map_scores0.png')
-plot_train_val_loss(train_losses0, val_losses0, BASE_PATH, 'plot_train_val_loss0.png')
+plot_losses(BASE_PATH, 'plot_train_val_loss0.png', train_losses0, val_losses0)
+
 print('Plots saved.')
 
 print("Finished training. Predicting on model")
