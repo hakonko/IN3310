@@ -2,7 +2,7 @@ from pathlib import Path
 
 import ResNet
 from ResNetData import ResNetDataPreprocessor, ResNetDataset
-from ResNetTrain import *
+from ResNetTrain import train_model, predict_softmax, compare_softmax, evaluate_on_test_set
 from FeatureAnalysis import FeatureMapExtractor, SparcityAnalyzer
 from plotting import plot_map_per_class, plot_losses
 
@@ -15,6 +15,9 @@ from torchvision import transforms
 
 from torchvision.models import resnet34, ResNet34_Weights
 
+##############################################################################################
+# Torch device and seed
+
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 def set_seed(seed):
@@ -25,14 +28,15 @@ def set_seed(seed):
 
 set_seed(42)
 
-##### Creating data (and verifying no updates) ######
+##############################################################################################
+# Tasks 1 a), b): CREATING AND VERIFYING DATA
 
 DATASET_PATH = Path('/mnt/e/ml_projects/IN3310/2025/tut_data/mandatory1_data/')
 BASE_PATH = Path('/mnt/e/ml_projects/IN3310/2025/tut_data/oblig1/')
 SOFTMAX_CSV = "saved_softmax_scores.csv"
 SOFTMAX_CSV_PRE = "pretrained_softmax_scores.csv"
 MODEL_PATH = '/mnt/e/ml_projects/IN3310/2025/tut_data/oblig1/resnet1.pth'
-linspc = '—' * 120
+linspc = '—' * 113
 
 print(linspc)
 print("Creating data")
@@ -55,20 +59,24 @@ augm_transform = transforms.Compose([
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
 ])
 
-# Creating data sets
+# creating data sets
 train_dataset = ResNetDataset(preprocessor.annotations_file, BASE_PATH, split='train', transform=transform)
 train_dataset_augm = ResNetDataset(preprocessor.annotations_file, BASE_PATH, split='train', transform=transform, augm_transform=augm_transform)
 val_dataset = ResNetDataset(preprocessor.annotations_file, BASE_PATH, split='val', transform=transform)
 test_dataset = ResNetDataset(preprocessor.annotations_file, BASE_PATH, split='test', transform=transform)
 
-# Creating DataLoaders
+##############################################################################################
+# Task 1 c): CREATING DATALOADERS
+
 train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 train_loader_augm = DataLoader(train_dataset_augm, batch_size=32, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
 test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
 
-##### Training three models #####
+##############################################################################################
+# Tasks 2 a), b), c), d): TRAINING THREE DIFFERENT MODELS
+
 ##### Model 1 #####
 print(linspc)
 print("Starting training of model 1/3: ResNet34, CrossEntropyLoss, Adam, lr: 0.001, basic transforms\n")
@@ -97,7 +105,7 @@ optimizer = optim.SGD(model.parameters(), lr=0.005)
 file_path = '/mnt/e/ml_projects/IN3310/2025/tut_data/oblig1/resnet3.pth'
 train_acc3, val_acc3, map_scores3, class_accs3, train_losses3, val_losses3 = train_model(model, train_loader, val_loader, criterion, optimizer, file_path, num_epochs=20)
 
-# deciding on best model
+# deciding on the best model
 class_accs = [class_accs1, class_accs2, class_accs3]
 map_scores = [map_scores1, map_scores2, map_scores3]
 train_losses = [train_losses1, train_losses2, train_losses3]
@@ -114,7 +122,10 @@ plot_map_per_class(class_names, class_accs[best_model], map_scores[best_model], 
 plot_losses(BASE_PATH, f'plot_train_val_loss{best_model + 1}.png', train_losses[best_model], val_losses[best_model], figsize=(10, 5))
 print('Training/Val plots saved.')
 
-##### Predicting on model and saving softmax results #####
+##############################################################################################
+# Task 2 e): PREDICTING ON TEST SET 
+
+# predicting on best model and saving softmax results
 print(linspc)
 print("Predicting on best model")
 model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
@@ -123,7 +134,10 @@ predict_softmax(model, test_loader, SOFTMAX_CSV)
 evaluate_on_test_set(model, test_loader, criterion)
 compare_softmax(SOFTMAX_CSV, model, test_loader)
 
-###### Using Pretrained Model ######
+##############################################################################################
+# Task 2 f): USING A PRETRAINED MODEL
+
+# loading the model
 print(linspc)
 print("Loading pretrained model")
 model = resnet34(weights = ResNet34_Weights.DEFAULT)
@@ -143,25 +157,32 @@ print("Starting training on pretrained model: ResNet34, CrossEntropyLoss, Adam, 
 train_accs0, val_accs0, map_scores0, class_accs0, train_losses0, val_losses0 = train_model(
     model, train_loader, val_loader, criterion, optimizer, "pretrained_resnet34.pth", num_epochs=10)
 
-# plotting
+# plotting training data
 plot_map_per_class(class_names, class_accs0, map_scores0, BASE_PATH, 'plot_map_scores0.png')
 plot_losses(BASE_PATH, 'plot_train_val_loss0.png', train_losses0, val_losses0)
 print('Plots saved.')
 
+# predicting on best model and saving softmax results
 print(linspc)
 print("Finished training. Predicting on model")
 predict_softmax(model, test_loader, SOFTMAX_CSV_PRE)
 evaluate_on_test_set(model, test_loader, criterion)
 compare_softmax(SOFTMAX_CSV_PRE, model, test_loader)
 
-###### Feature Analysis ######
+##############################################################################################
+# Tasks 3 a)-f):
+#
+# For a more thorough runthrough of this tasks, please refer to the 
+# Jupyter Notebook file: feature_analysis.ipynb
+
+layer_names = ['layer1', 'layer3', 'layer4']
+
 print(linspc)
 print("Feature analysis pre-test: Extracting feature maps")
 # Setup data
 test_loader = DataLoader(test_dataset, batch_size=1, shuffle=True)
 
 # Extract feature maps
-layer_names = ['layer1', 'layer3', 'layer4']
 extractor = FeatureMapExtractor(model, layer_names)
 feature_maps = extractor.extract_feature_maps(test_loader, num_images=5)
 extractor.cleanup()
