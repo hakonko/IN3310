@@ -1,6 +1,14 @@
 import torch
 
 class FeatureMapExtractor:
+    """
+    Extracts feature maps from specified layers, using forward hooks
+    
+        Args:
+            model: a ResNet model
+            layer_names: the names of the layers that we will feature
+    """
+
     def __init__(self, model, layer_names):
         self.model = model
         self.layer_names = layer_names
@@ -49,6 +57,7 @@ class FeatureMapExtractor:
 
                 print(f"Feature map stored for image {i + 1}")
 
+                # stop after processing the wanted number of images
                 if (i + 1) >= num_images:
                     break
         
@@ -58,7 +67,7 @@ class FeatureMapExtractor:
         """Removes hooks to free up resources"""
         for _, hook in self.hooks:
             hook.remove()
-        self.hooks = []
+        self.hooks = [] # clearing the list of hooks
 
 
 class SparsityAnalyzer:
@@ -80,6 +89,8 @@ class SparsityAnalyzer:
     def _setup_hooks(self):
         for name, module in self.model.named_modules():
             if name in self.module_names:
+
+                # attaching a hook that calls _hook_function during forward passes
                 hook = module.register_forward_hook(
                     lambda mod, inp, out, name = name: self._hook_function(mod, inp, out, name)
                 )
@@ -87,16 +98,17 @@ class SparsityAnalyzer:
 
     def _hook_function(self, module, input, output, name):
 
-        batch_id = getattr(self, 'current_batch_id', 0)
+        batch_id = getattr(self, 'current_batch_id', 0) # get the batch id
         
-        if batch_id not in self.processed_batches[name]:
-            self.processed_batches[name].add(batch_id)
+        if batch_id not in self.processed_batches[name]: # ensuring each bacth is processed once
+            self.processed_batches[name].add(batch_id) # marking batch as processed
             
             feature_map = output.detach().cpu()
-            total_elements = feature_map.numel()
-            non_positive_count = torch.sum(feature_map <= 0).item()
-            percentage = (non_positive_count / total_elements) * 100
+            total_elements = feature_map.numel() # total number of elements in the feature map
+            non_positive_count = torch.sum(feature_map <= 0).item() # counting non-positive values
+            percentage = (non_positive_count / total_elements) * 100 # good ol' percentage
             
+            # compute averages and update count/statistics
             current_avg = self.feature_stats[name]['avg']
             current_count = self.feature_stats[name]['count']
             
@@ -126,9 +138,11 @@ class SparsityAnalyzer:
                 images = images.to(self.device)
                 self.model(images)
                 
+                # tracking number of processed images
                 processed_images = (i + 1) * images.size(0)
-                print(f'\rProcessed {processed_images} images', end='', flush=True)
+                print(f'\rProcessed {processed_images} images', end='', flush=True) # printing on one line ;)
                 
+                # stopping when required number of images are processed
                 if processed_images >= num_images:
                     print()
                     break
@@ -147,5 +161,4 @@ class SparsityAnalyzer:
         """Removing all hooks to free resources"""
         for hook in self.hooks:
             hook.remove()
-        self.hooks = []
-
+        self.hooks = [] # clearing the list of hooks

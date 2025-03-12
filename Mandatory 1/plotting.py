@@ -42,3 +42,28 @@ def plot_losses(file_path, file_name, train_losses, val_losses=None, figsize=(10
     plt.legend()
     plt.savefig(save_path)
     plt.close()
+
+def plot_featuremaps(feature_maps, save_path):
+    for i, (layer_name, feature_map) in enumerate(feature_maps.items()):
+        feature_map = feature_map.squeeze(0)
+
+        num_channels = feature_map.shape[0]
+        print(f"Looking at {layer_name} with {num_channels} channels")
+
+        num_to_show = min(4, num_channels)
+
+        fig, axes = plt.subplots(1, 4, figsize=(5, 2))
+        fig.suptitle(f"{layer_name} Feature Maps for Image 5")
+
+        for channel in range(num_to_show):
+            ax = axes[channel]
+            ax.imshow(feature_map[channel].cpu().numpy(), cmap="viridis")
+            ax.axis("off")
+            ax.set_title(f"Channel {channel}")
+
+        for i in range(num_to_show, 4):
+            fig.delaxes(axes[i])
+
+        plt.tight_layout()
+        plt.savefig(save_path)
+        plt.show()

@@ -1,0 +1,108 @@
+Script started on 2025-03-12 19:08:48+01:00 [COMMAND="python haakongk.py" TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="146" LINES="55"]
+—————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+Creating data
+Success! Train, validation and test sets are disjoint
+—————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+Starting training of model 1/3: ResNet34, CrossEntropyLoss, Adam, lr: 0.001, basic transforms
+
+Epoch 1/20, Train Loss: 1.0780, Val Loss: 1.3688, Train Acc: 0.5755, Val Acc: 0.5116, mAP: 0.5955 - Model Saved
+Epoch 2/20, Train Loss: 0.7910, Val Loss: 0.8201, Train Acc: 0.7078, Val Acc: 0.7013, mAP: 0.7964 - Model Saved
+Epoch 3/20, Train Loss: 0.6561, Val Loss: 0.6323, Train Acc: 0.7612, Val Acc: 0.7759, mAP: 0.8564 - Model Saved
+Epoch 4/20, Train Loss: 0.5817, Val Loss: 0.6478, Train Acc: 0.7883, Val Acc: 0.7733, mAP: 0.8610 - Model Saved
+Epoch 5/20, Train Loss: 0.5354, Val Loss: 0.5513, Train Acc: 0.8072, Val Acc: 0.8057, mAP: 0.8726 - Model Saved
+Epoch 6/20, Train Loss: 0.4925, Val Loss: 0.4699, Train Acc: 0.8250, Val Acc: 0.8348, mAP: 0.9080 - Model Saved
+Epoch 7/20, Train Loss: 0.4710, Val Loss: 0.4744, Train Acc: 0.8357, Val Acc: 0.8359, mAP: 0.9133 - Model Saved
+Epoch 8/20, Train Loss: 0.4356, Val Loss: 0.4670, Train Acc: 0.8470, Val Acc: 0.8333, mAP: 0.9117
+Epoch 9/20, Train Loss: 0.4041, Val Loss: 0.4213, Train Acc: 0.8562, Val Acc: 0.8568, mAP: 0.9232 - Model Saved
+Epoch 10/20, Train Loss: 0.3795, Val Loss: 0.4456, Train Acc: 0.8652, Val Acc: 0.8371, mAP: 0.9164
+Epoch 11/20, Train Loss: 0.3515, Val Loss: 0.4627, Train Acc: 0.8751, Val Acc: 0.8371, mAP: 0.9252 - Model Saved
+Epoch 12/20, Train Loss: 0.3320, Val Loss: 0.3890, Train Acc: 0.8843, Val Acc: 0.8606, mAP: 0.9376 - Model Saved
+Epoch 13/20, Train Loss: 0.3171, Val Loss: 0.5060, Train Acc: 0.8851, Val Acc: 0.8154, mAP: 0.9175
+Epoch 14/20, Train Loss: 0.3115, Val Loss: 0.6421, Train Acc: 0.8873, Val Acc: 0.7774, mAP: 0.9085
+Epoch 15/20, Train Loss: 0.2708, Val Loss: 0.4730, Train Acc: 0.9032, Val Acc: 0.8434, mAP: 0.9233
+Early stopping! No improvement in mAP score over 3 epochs
+—————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+Starting training of model 2/3: ResNet34, CrossEntropyLoss, Adam, lr: 0.001, augmented transforms
+
+Epoch 1/20, Train Loss: 1.2237, Val Loss: 0.9363, Train Acc: 0.5166, Val Acc: 0.6223, mAP: 0.7126 - Model Saved
+Epoch 2/20, Train Loss: 0.9511, Val Loss: 0.7352, Train Acc: 0.6344, Val Acc: 0.7215, mAP: 0.7900 - Model Saved
+Epoch 3/20, Train Loss: 0.7976, Val Loss: 0.7402, Train Acc: 0.7032, Val Acc: 0.7323, mAP: 0.8223 - Model Saved
+Epoch 4/20, Train Loss: 0.7136, Val Loss: 0.5470, Train Acc: 0.7374, Val Acc: 0.8054, mAP: 0.8811 - Model Saved
+Epoch 5/20, Train Loss: 0.6637, Val Loss: 0.7549, Train Acc: 0.7551, Val Acc: 0.7289, mAP: 0.8219
+Epoch 6/20, Train Loss: 0.6185, Val Loss: 0.5185, Train Acc: 0.7754, Val Acc: 0.8110, mAP: 0.8948 - Model Saved
+Epoch 7/20, Train Loss: 0.5929, Val Loss: 0.6225, Train Acc: 0.7907, Val Acc: 0.7875, mAP: 0.8768
+Epoch 8/20, Train Loss: 0.5633, Val Loss: 0.4341, Train Acc: 0.8007, Val Acc: 0.8471, mAP: 0.9172 - Model Saved
+Epoch 9/20, Train Loss: 0.5406, Val Loss: 0.4382, Train Acc: 0.8041, Val Acc: 0.8486, mAP: 0.9156
+Epoch 10/20, Train Loss: 0.5194, Val Loss: 0.4716, Train Acc: 0.8125, Val Acc: 0.8367, mAP: 0.9096
+Epoch 11/20, Train Loss: 0.4909, Val Loss: 0.4024, Train Acc: 0.8223, Val Acc: 0.8531, mAP: 0.9313 - Model Saved
+Epoch 12/20, Train Loss: 0.4840, Val Loss: 0.7647, Train Acc: 0.8266, Val Acc: 0.7360, mAP: 0.8467
+Epoch 13/20, Train Loss: 0.4758, Val Loss: 0.4525, Train Acc: 0.8305, Val Acc: 0.8318, mAP: 0.9161
+Epoch 14/20, Train Loss: 0.4644, Val Loss: 0.4010, Train Acc: 0.8389, Val Acc: 0.8624, mAP: 0.9277
+Early stopping! No improvement in mAP score over 3 epochs
+—————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+Starting training of model 3/3: ResNet34, CrossEntropyLoss, SGD, lr: 0.005, basic transforms
+
+Epoch 1/20, Train Loss: 0.9473, Val Loss: 0.7804, Train Acc: 0.6288, Val Acc: 0.7077, mAP: 0.8349 - Model Saved
+Epoch 2/20, Train Loss: 0.6093, Val Loss: 0.6365, Train Acc: 0.7758, Val Acc: 0.7666, mAP: 0.8673 - Model Saved
+Epoch 3/20, Train Loss: 0.4990, Val Loss: 0.5995, Train Acc: 0.8226, Val Acc: 0.7882, mAP: 0.8796 - Model Saved
+Epoch 4/20, Train Loss: 0.4133, Val Loss: 0.7622, Train Acc: 0.8535, Val Acc: 0.7487, mAP: 0.8794
+Epoch 5/20, Train Loss: 0.3672, Val Loss: 0.6035, Train Acc: 0.8672, Val Acc: 0.7793, mAP: 0.8714
+Epoch 6/20, Train Loss: 0.3036, Val Loss: 0.5827, Train Acc: 0.8929, Val Acc: 0.8154, mAP: 0.9011 - Model Saved
+Epoch 7/20, Train Loss: 0.2549, Val Loss: 0.6111, Train Acc: 0.9113, Val Acc: 0.8046, mAP: 0.9024 - Model Saved
+Epoch 8/20, Train Loss: 0.2081, Val Loss: 0.5129, Train Acc: 0.9268, Val Acc: 0.8434, mAP: 0.9113 - Model Saved
+Epoch 9/20, Train Loss: 0.1816, Val Loss: 0.7163, Train Acc: 0.9364, Val Acc: 0.8013, mAP: 0.9009
+Epoch 10/20, Train Loss: 0.1271, Val Loss: 0.5998, Train Acc: 0.9585, Val Acc: 0.8207, mAP: 0.9015
+Epoch 11/20, Train Loss: 0.1166, Val Loss: 0.7303, Train Acc: 0.9598, Val Acc: 0.7968, mAP: 0.8886
+Early stopping! No improvement in mAP score over 3 epochs
+—————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+Finished training. The best model was number 1, with mAP-score 0.9376
+Training/Val plots saved.
+—————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+Predicting on best model
+Softmax scores saved to saved_softmax_scores.csv
+Test Accuracy: 0.8677
+Test Loss: 0.3836
+Test mAP: 0.9402
+Test Mean Accuracy per Class: 0.8700
+Softmax scores match within the given tolerance. Max difference: 0.000000
+—————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+Loading pretrained model
+—————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+Starting training on pretrained model: ResNet34, CrossEntropyLoss, Adam, lr: 0.001, basic transforms
+Epoch 1/10, Train Loss: 0.5503, Val Loss: 0.4984, Train Acc: 0.8093, Val Acc: 0.8289, mAP: 0.9229 - Model Saved
+Epoch 2/10, Train Loss: 0.3560, Val Loss: 0.3741, Train Acc: 0.8742, Val Acc: 0.8654, mAP: 0.9437 - Model Saved
+Epoch 3/10, Train Loss: 0.2984, Val Loss: 0.4744, Train Acc: 0.8964, Val Acc: 0.8307, mAP: 0.9268
+Epoch 4/10, Train Loss: 0.2745, Val Loss: 0.3621, Train Acc: 0.9020, Val Acc: 0.8717, mAP: 0.9503 - Model Saved
+Epoch 5/10, Train Loss: 0.2183, Val Loss: 0.2931, Train Acc: 0.9227, Val Acc: 0.8956, mAP: 0.9596 - Model Saved
+Epoch 6/10, Train Loss: 0.1902, Val Loss: 0.4601, Train Acc: 0.9320, Val Acc: 0.8482, mAP: 0.9361
+Epoch 7/10, Train Loss: 0.1783, Val Loss: 0.3309, Train Acc: 0.9375, Val Acc: 0.9012, mAP: 0.9547
+Epoch 8/10, Train Loss: 0.1365, Val Loss: 0.4632, Train Acc: 0.9536, Val Acc: 0.8676, mAP: 0.9419
+Early stopping! No improvement in mAP score over 3 epochs
+Plots saved.
+—————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+Finished training. Predicting on model
+Softmax scores saved to pretrained_softmax_scores.csv
+Test Accuracy: 0.8689
+Test Loss: 0.4526
+Test mAP: 0.9408
+Test Mean Accuracy per Class: 0.8710
+Softmax scores match within the given tolerance. Max difference: 0.000000
+—————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+Feature analysis pre-test: Extracting feature maps
+Feature map stored for image 1
+Feature map stored for image 2
+Feature map stored for image 3
+Feature map stored for image 4
+Feature map stored for image 5
+—————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+Performing feature analysis
+Processed 1 imagesProcessed 2 imagesProcessed 3 imagesProcessed 4 imagesProcessed 5 imagesProcessed 6 imagesProcessed 7 imagesProcessed 8 imagesProcessed 9 imagesProcessed 10 imagesProcessed 11 imagesProcessed 12 imagesProcessed 13 imagesProcessed 14 imagesProcessed 15 imagesProcessed 16 imagesProcessed 17 imagesProcessed 18 imagesProcessed 19 imagesProcessed 20 imagesProcessed 21 imagesProcessed 22 imagesProcessed 23 imagesProcessed 24 imagesProcessed 25 imagesProcessed 26 imagesProcessed 27 imagesProcessed 28 imagesProcessed 29 imagesProcessed 30 imagesProcessed 31 imagesProcessed 32 imagesProcessed 33 imagesProcessed 34 imagesProcessed 35 imagesProcessed 36 imagesProcessed 37 imagesProcessed 38 imagesProcessed 39 imagesProcessed 40 imagesProcessed 41 imagesProcessed 42 imagesProcessed 43 imagesProcessed 44 imagesProcessed 45 imagesProcessed 46 imagesProcessed 47 imagesProcessed 48 imagesProcessed 49 imagesProcessed 50 imagesProcessed 51 imagesProcessed 52 imagesProcessed 53 imagesProcessed 54 imagesProcessed 55 imagesProcessed 56 imagesProcessed 57 imagesProcessed 58 imagesProcessed 59 imagesProcessed 60 imagesProcessed 61 imagesProcessed 62 imagesProcessed 63 imagesProcessed 64 imagesProcessed 65 imagesProcessed 66 imagesProcessed 67 imagesProcessed 68 imagesProcessed 69 imagesProcessed 70 imagesProcessed 71 imagesProcessed 72 imagesProcessed 73 imagesProcessed 74 imagesProcessed 75 imagesProcessed 76 imagesProcessed 77 imagesProcessed 78 imagesProcessed 79 imagesProcessed 80 imagesProcessed 81 imagesProcessed 82 imagesProcessed 83 imagesProcessed 84 imagesProcessed 85 imagesProcessed 86 imagesProcessed 87 imagesProcessed 88 imagesProcessed 89 imagesProcessed 90 imagesProcessed 91 imagesProcessed 92 imagesProcessed 93 imagesProcessed 94 imagesProcessed 95 imagesProcessed 96 imagesProcessed 97 imagesProcessed 98 imagesProcessed 99 imagesProcessed 100 imagesProcessed 101 imagesProcessed 102 imagesProcessed 103 imagesProcessed 104 imagesProcessed 105 imagesProcessed 106 imagesProcessed 107 imagesProcessed 108 imagesProcessed 109 imagesProcessed 110 imagesProcessed 111 imagesProcessed 112 imagesProcessed 113 imagesProcessed 114 imagesProcessed 115 imagesProcessed 116 imagesProcessed 117 imagesProcessed 118 imagesProcessed 119 imagesProcessed 120 imagesProcessed 121 imagesProcessed 122 imagesProcessed 123 imagesProcessed 124 imagesProcessed 125 imagesProcessed 126 imagesProcessed 127 imagesProcessed 128 imagesProcessed 129 imagesProcessed 130 imagesProcessed 131 imagesProcessed 132 imagesProcessed 133 imagesProcessed 134 imagesProcessed 135 imagesProcessed 136 imagesProcessed 137 imagesProcessed 138 imagesProcessed 139 imagesProcessed 140 imagesProcessed 141 imagesProcessed 142 imagesProcessed 143 imagesProcessed 144 imagesProcessed 145 imagesProcessed 146 imagesProcessed 147 imagesProcessed 148 imagesProcessed 149 imagesProcessed 150 imagesProcessed 151 imagesProcessed 152 imagesProcessed 153 imagesProcessed 154 imagesProcessed 155 imagesProcessed 156 imagesProcessed 157 imagesProcessed 158 imagesProcessed 159 imagesProcessed 160 imagesProcessed 161 imagesProcessed 162 imagesProcessed 163 imagesProcessed 164 imagesProcessed 165 imagesProcessed 166 imagesProcessed 167 imagesProcessed 168 imagesProcessed 169 imagesProcessed 170 imagesProcessed 171 imagesProcessed 172 imagesProcessed 173 imagesProcessed 174 imagesProcessed 175 imagesProcessed 176 imagesProcessed 177 imagesProcessed 178 imagesProcessed 179 imagesProcessed 180 imagesProcessed 181 imagesProcessed 182 imagesProcessed 183 imagesProcessed 184 imagesProcessed 185 imagesProcessed 186 imagesProcessed 187 imagesProcessed 188 imagesProcessed 189 imagesProcessed 190 imagesProcessed 191 imagesProcessed 192 imagesProcessed 193 imagesProcessed 194 imagesProcessed 195 imagesProcessed 196 imagesProcessed 197 imagesProcessed 198 imagesProcessed 199 imagesProcessed 200 images
+Module layer1.0.relu: Average non-positive values: 43.79%, Count: 200
+Module layer2.0.relu: Average non-positive values: 73.50%, Count: 200
+Module layer3.0.relu: Average non-positive values: 70.16%, Count: 200
+Module layer4.0.relu: Average non-positive values: 79.81%, Count: 200
+Module relu: Average non-positive values: 38.14%, Count: 200
+—————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+Program ended successfully
+
+Script done on 2025-03-12 19:29:49+01:00 [COMMAND_EXIT_CODE="0"]
