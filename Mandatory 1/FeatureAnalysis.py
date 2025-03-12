@@ -15,12 +15,16 @@ class FeatureMapExtractor:
         self._setup_hooks()
 
     def _setup_hooks(self):
+        """Registers forward hooks on the specified layers to get the feature maps"""
+
         for name in self.layer_names:
             layer = dict(self.model.named_children())[name]
             hook = layer.register_forward_hook(self._hook_function)
             self.hooks.append((name, hook))
 
     def _hook_function(self, module, input, output):
+        """Captures the outpt feature maps from the hooked layers"""
+
         for name, _ in self.hooks:
             if module == dict(self.model.named_children())[name]:
                 self.feature_maps[name] = output.detach().cpu()
@@ -51,12 +55,15 @@ class FeatureMapExtractor:
         return self.feature_maps
     
     def cleanup(self):
+        """Removes hooks to free up resources"""
         for _, hook in self.hooks:
             hook.remove()
         self.hooks = []
 
 
-class SparcityAnalyzer:
+class SparsityAnalyzer:
+    """Analyzing the sparsity of activations (percentage of non-positive values) in the model layers"""
+
     def __init__(self, model, module_names):
         self.model = model
         self.module_names = module_names
@@ -100,6 +107,15 @@ class SparcityAnalyzer:
             self.feature_stats[name]['count'] = new_count
 
     def analyze_activations(self, dataloader, num_images=200):
+        """Running sparsity analysis for a specified number of images
+
+        Args:
+            dataloader: DataLoader with input images
+            num_images: Number of images to analyze
+
+        Returns:
+            Dictionary with sparsity statistics per layer
+        """
         self.model.eval()
         
         with torch.no_grad():
@@ -120,12 +136,15 @@ class SparcityAnalyzer:
         return self.feature_stats
     
     def print_statistics(self):
+        """Printing the sparsity statistics for each module we have anlyzed"""
+
         for name, item in self.feature_stats.items():
             avg = item['avg']
             count = item['count']
             print(f'Module {name}: Average non-positive values: {avg:.2f}%, Count: {count}')
 
     def cleanup(self):
+        """Removing all hooks to free resources"""
         for hook in self.hooks:
             hook.remove()
         self.hooks = []
