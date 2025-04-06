@@ -34,11 +34,37 @@ class COCODataset(Dataset):
 
         # Load the frozen ResNet50 features from pickle
         with open(frozen_feature_path, 'rb') as f:
-            self.frozen_features = pickle.load(f)
+            #self.frozen_features = pickle.load(f)
+
+        ###### TESTING THIS #######
+            full_frozen_features = pickle.load(f)
+
+        self.frozen_features = {
+            k: full_frozen_features[k] for i, k in enumerate(full_frozen_features) if i < 5000
+        }
+        ###### END TEST #######
+
 
         # Load COCO annotations
         with open(annotation_file, 'r') as f:
-            self.dataset = json.load(f)
+            #self.dataset = json.load(f)
+
+        #### TESTING THIS ####
+            full_dataset = json.load(f)
+        
+        selected_image_ids = set(list(self.frozen_features.keys()))
+
+        # Filtrer images
+        filtered_images = [img for img in full_dataset['images'] if os.path.splitext(img['file_name'])[0] in selected_image_ids]
+
+        # Filtrer annotations (kun de som matcher valgte bilder)
+        filtered_annotations = [ann for ann in full_dataset['annotations'] if ann['image_id'] in {img['id'] for img in filtered_images}]
+
+        self.dataset = {
+            'images': filtered_images,
+            'annotations': filtered_annotations
+        ##### END TEST #####
+}
 
         # Build an image index mapping image id -> image info
         # Also create a mapping from image id to file name (without extension) to lookup frozen features.

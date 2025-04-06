@@ -94,9 +94,8 @@ class CaptionRNN(nn.Module):
 
         # Embedding and output layers.
         self.embedding = nn.Embedding(vocabulary_size, embedding_size)
-        # TODO: The output layer (final layer) is a linear layer. What should be the size (dimensions) of its output?
-        #         Replace None with a linear layer with correct output size
-        self.output_layer = None  # nn.Linear(self.hidden_state_size, )
+
+        self.output_layer = nn.Linear(self.hidden_state_size, self.vocabulary_size)
 
         # Create attention module if needed.
         if self.use_attention:
@@ -106,10 +105,19 @@ class CaptionRNN(nn.Module):
         # This is used to populate self.cells
         # For the first layer, the input is the concatenation of the token embedding and
         # the raw feature vector or the attention-weighted feature vector.
-        input_sizes = None
+        first_layer_input_size = embedding_size + hidden_state_size
+        input_sizes = [first_layer_input_size] + [hidden_state_size] * (num_layers - 1)
+
 
         # TODO: Create a list of type "nn.ModuleList" and populate it with cells (layers) of type self.cell_type.
-        self.cells = None
+        self.cells = nn.ModuleList()
+        for i in range(self.num_layers):
+            if cell_type == 'RNN':
+                self.cells.append(nn.RNNCell(input_sizes[i], hidden_state_size))
+            elif cell_type == 'LSTM':
+                self.cells.append(nn.LSTMCell(input_sizes[i], hidden_state_size))
+            else:
+                raise ValueError(f'Invalid cell_type {cell_type}! Choose RNN or LSTM...')
 
     def forward(self, tokens, features, is_train):
         """
@@ -141,13 +149,14 @@ class CaptionRNN(nn.Module):
         # We do not need this size for vanilla RNN cell but we modify the RNNCell instead to have the same
         # interface for both RNNCell and LSTMCell. This avoids putting if statements at some places in the
         # code below.
-        hidden_states = None
+
+        hidden_states = torch.zeros(self.num_layers, batch_size, 2 * self.hidden_state_size, device=tokens.device)
 
         logits_series = []
         attn_weights_series = [] if self.use_attention else None
 
         # TODO: Fetch the first (index 0) embeddings that should go as input to the RNN.
-        current_token_vec = None  # Should have shape (batch_size, embedding_size)
+        current_token_vec = token_embeddings[:, 0, :]  # Should have shape (batch_size, embedding_size)
 
         for t in range(seq_len):
             new_states = []
@@ -168,16 +177,17 @@ class CaptionRNN(nn.Module):
                         cell_input = None
                     else:
                         # TODO: Without attention, concatenate the token embedding with the image feature.
-                        cell_input = None
+                        cell_input = torch.cat([current_token_vec, features], dim=1)
                 else:
-                    cell_input = None  # TODO: Initialise to the output of the previous layer
+                    cell_input = hidden_states[layer - 1][:, :self.hidden_state_size]  # TODO: Initialise to the output of the previous layer
 
-                new_state = None  # TODO: Call the cell for this layer
+                new_state = self.cells[layer](cell_input, hidden_states[layer])  # TODO: Call the cell for this layer
                 new_states.append(new_state)
 
                 if layer == self.num_layers - 1:
                     # TODO: Get logits from the self.output_layer and append them to logits_series
-                    logits = None
+                    final_hidden = new_state[:, :self.hidden_state_size]
+                    logits = self.output_layer(final_hidden)
                     logits_series.append(logits)
                     if t < seq_len - 1:
                         if is_train:
