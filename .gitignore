@@ -1,3 +1,4 @@
-*.jpg
 *.pth
 mandatory1_data/
+__pycache__/
+ckpts/
