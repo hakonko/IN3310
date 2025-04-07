@@ -24,5 +24,5 @@ class Config:
         # Optimisation
         self.learning_rate = 1e-4
         self.weight_decay = 1e-5
-        self.num_epochs = 20
+        self.num_epochs = 10
         self.batch_size = 128

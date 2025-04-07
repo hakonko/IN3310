@@ -52,7 +52,8 @@ class ImageCaptionModel(nn.Module):
             # TODO: Permute features: from [batch, channels, H, W] to [batch, H, W, channels],
             #       then flatten spatial dimensions to get [batch, num_regions, channels].
             cnn_features = cnn_features.permute(0, 2, 3, 1)
-            cnn_features = cnn_features.view(cnn_features(0), -1, cnn_features.size(-1))
+            cnn_features = cnn_features.view(cnn_features.size(0), -1, cnn_features.size(-1))
+
 
             # TODO: Apply the projection to each region (nn.Linear applies to the last dim).
             processed_img_feat = self.feature_projection(cnn_features)  # Resulting shape should be [batch, num_regions, hidden_size]
@@ -328,5 +329,6 @@ class Attention(nn.Module):
         # TODO: Apply softmax on the att_scores to get the alphas (attention weights)
         alpha = self.softmax(att_scores)
         # TODO: Compute context vector as the weighted sum of encoder outputs. You might need to unsqueeze() alpha.
-        context = (features * alpha.unsqueeze(-1).sum(dim=1))
+        context = (features * alpha.unsqueeze(-1)).sum(dim=1)
+
         return context, alpha
