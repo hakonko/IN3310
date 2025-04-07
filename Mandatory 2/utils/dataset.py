@@ -11,8 +11,94 @@ from config import Config
 from nltk_tokenizer.tokenize import word_tokenize
 from utils.vocabulary import Vocabulary
 
+import pickle
+import torch
+from torch.utils.data import Dataset
 
 class COCODataset(Dataset):
+    def __init__(self, annotation_file, frozen_feature_path, config, is_train=True):
+        self.annotation_file = annotation_file
+        self.frozen_feature_path = frozen_feature_path
+        self.max_caption_length = config.max_caption_length
+        self.is_train = is_train
+
+        # Load vocabulary
+        self.vocab = Vocabulary(config.vocabulary_size, config.vocabulary_file)
+
+        # Load COCO annotations
+        with open(annotation_file, 'r') as f:
+            self.dataset = json.load(f)
+
+        # Build an image index mapping image id -> image info
+        self.imgs = {img['id']: img for img in self.dataset.get('images', [])}
+        self.img_id_to_name = {img['id']: os.path.splitext(img['file_name'])[0] for img in self.dataset.get('images', [])}
+
+        if self.is_train:
+            self.annotations = self.dataset['annotations']
+            self.filtered_annotations = self._filter_annotations()
+        else:
+            self.img_to_captions = self._process_val_annotations()
+
+        # Features are loaded lazily (only when needed)
+        self.features = None
+
+    def _load_features_if_needed(self):
+        if self.features is None:
+            with open(self.frozen_feature_path, 'rb') as f:
+                self.features = pickle.load(f)
+
+    def _filter_annotations(self):
+        filtered = []
+        for ann in self.annotations:
+            caption = ann['caption'].strip().lower()
+            if not caption.endswith('.'):
+                caption += '.'
+            tokens = ['<start>'] + word_tokenize(caption)
+            if len(tokens) > self.max_caption_length or any(token not in self.vocab.word2idx for token in tokens):
+                continue
+            filtered.append(ann)
+        return filtered
+
+    def _process_val_annotations(self):
+        img_to_captions = defaultdict(list)
+        for ann in self.dataset['annotations']:
+            img_id = ann['image_id']
+            caption = ann['caption'].strip()
+            if not caption.endswith('.'):
+                caption += '.'
+            img_to_captions[img_id].append(caption)
+        return img_to_captions
+
+    def __len__(self):
+        return len(self.filtered_annotations) if self.is_train else len(self.img_to_captions)
+
+    def __getitem__(self, index):
+        self._load_features_if_needed()
+
+        if self.is_train:
+            ann = self.filtered_annotations[index]
+            img_id = ann['image_id']
+            caption = ann['caption'].strip().lower()
+            if not caption.endswith('.'):
+                caption += '.'
+            tokens = ['<start>'] + word_tokenize(caption)
+            word_idxs = [self.vocab.word2idx[token] for token in tokens]
+
+            caption_array = np.zeros(self.max_caption_length, dtype=np.int32)
+            caption_array[:len(word_idxs)] = np.array(word_idxs)
+            caption_tensor = torch.tensor(caption_array, dtype=torch.long)
+        else:
+            img_id = list(self.img_to_captions.keys())[index]
+            caption_tensor = self.img_to_captions[img_id]
+
+        key = self.img_id_to_name[img_id]
+        feature_tensor = torch.tensor(self.features[key], dtype=torch.float)
+
+        return feature_tensor, caption_tensor, img_id
+
+
+
+class COCODataset_old(Dataset):
     def __init__(self, annotation_file, frozen_feature_path, config: Config, is_train):
         """
         :param annotation_file: Path toe COCO dataset annotation file.
@@ -34,37 +120,11 @@ class COCODataset(Dataset):
 
         # Load the frozen ResNet50 features from pickle
         with open(frozen_feature_path, 'rb') as f:
-            #self.frozen_features = pickle.load(f)
-
-        ###### TESTING THIS #######
-            full_frozen_features = pickle.load(f)
-
-        self.frozen_features = {
-            k: full_frozen_features[k] for i, k in enumerate(full_frozen_features) if i < 5000
-        }
-        ###### END TEST #######
-
+            self.frozen_features = pickle.load(f)
 
         # Load COCO annotations
         with open(annotation_file, 'r') as f:
-            #self.dataset = json.load(f)
-
-        #### TESTING THIS ####
-            full_dataset = json.load(f)
-        
-        selected_image_ids = set(list(self.frozen_features.keys()))
-
-        # Filtrer images
-        filtered_images = [img for img in full_dataset['images'] if os.path.splitext(img['file_name'])[0] in selected_image_ids]
-
-        # Filtrer annotations (kun de som matcher valgte bilder)
-        filtered_annotations = [ann for ann in full_dataset['annotations'] if ann['image_id'] in {img['id'] for img in filtered_images}]
-
-        self.dataset = {
-            'images': filtered_images,
-            'annotations': filtered_annotations
-        ##### END TEST #####
-}
+            self.dataset = json.load(f)
 
         # Build an image index mapping image id -> image info
         # Also create a mapping from image id to file name (without extension) to lookup frozen features.

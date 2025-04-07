@@ -25,4 +25,4 @@ class Config:
         self.learning_rate = 1e-4
         self.weight_decay = 1e-5
         self.num_epochs = 40
-        self.batch_size = 32
+        self.batch_size = 256

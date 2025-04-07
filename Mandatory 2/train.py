@@ -22,8 +22,14 @@ from utils.plot import plot_metrics, plot_loss
 
 
 def train():
-    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-    print(f"Using device: {device}")
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print("Using device:", device)
+
+    # Ekstra test
+    print(torch.cuda.is_available())
+    print(torch.cuda.device_count())
+    print(torch.cuda.get_device_name(0))
+
 
 
     config = Config()
@@ -47,9 +53,9 @@ def train():
     val_dataset = COCODataset(config.val_caption_file, config.resnet50_features_val_file, config, False)
     # Create dataloaders from the datasets
     train_loader = DataLoader(train_dataset, batch_size=config.batch_size, collate_fn=coco_collate_fn,
-                              shuffle=True, num_workers=10, pin_memory=True)
+                              shuffle=True, num_workers=2, pin_memory=True)
     val_loader = DataLoader(val_dataset, batch_size=256, collate_fn=coco_collate_fn,
-                            shuffle=False, num_workers=10, pin_memory=True)
+                            shuffle=False, num_workers=2, pin_memory=True)
 
     # Instantiate the model, optimiser, and loss function.
     model = ImageCaptionModel(512, config.embedding_size, config.hidden_size, config.vocabulary_size,
@@ -84,7 +90,7 @@ def train():
             target_tokens = captions[:, 1:].to(device)  # (batch_size, max_caption_length - 1)
 
             # Forward pass.
-            outputs, alphas = model(features, input_tokens)  # (batch_size, seq_len, vocab_size)
+            outputs, alphas = model(features, input_tokens, is_train=True)  # (batch_size, seq_len, vocab_size))
 
             # Reshape outputs and targets to compute the loss.
             outputs = outputs.reshape(-1, outputs.size(2))  # (batch_size*(seq_len), vocab_size)
@@ -124,8 +130,8 @@ def train():
 
     # Plot losses and metric scores
     Path('plots').mkdir(parents=True, exist_ok=True)
-    plot_loss(f"plots/loss_plot_{os.environ['SLURM_JOB_ID']}.jpg", step_losses, epoch_start_steps)
-    plot_metrics(f"plots/metrics_plot_{os.environ['SLURM_JOB_ID']}.jpg", metric_scores_epochs, config.num_epochs)
+    plot_loss("plots/loss_plot.jpg", step_losses, epoch_start_steps)
+    plot_metrics("plots/metrics_plot.jpg", metric_scores_epochs, config.num_epochs)
 
 
 def save_checkpoint(model, ckpt_path: Path):

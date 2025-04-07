@@ -1,0 +1,519 @@
+Using device: cuda
+True
+1
+NVIDIA GeForce RTX 4090
+{'_root_dir': '/mnt/e/ml_projects/IN3310/2025/mandatory2_data', 'train_caption_file': '/mnt/e/ml_projects/IN3310/2025/mandatory2_data/annotations/captions_train2017.json', 'val_caption_file': '/mnt/e/ml_projects/IN3310/2025/mandatory2_data/annotations/captions_val2017.json', 'val_images_dir': '/mnt/e/ml_projects/IN3310/2025/mandatory2_data/val2017', 'resnet50_features_train_file': '/mnt/e/ml_projects/IN3310/2025/mandatory2_data/coco_train_resnet18_layer4_features.pkl', 'resnet50_features_val_file': '/mnt/e/ml_projects/IN3310/2025/mandatory2_data/coco_val_resnet18_layer4_features.pkl', 'max_caption_length': 30, 'embedding_size': 512, 'hidden_size': 512, 'use_attention': False, 'feature_size': 512, 'num_layers': 1, 'cell_type': 'RNN', 'vocabulary_file': '/mnt/e/ml_projects/IN3310/2025/mandatory2_data/vocabulary.csv', 'vocabulary_size': 5000, 'learning_rate': 0.0001, 'weight_decay': 1e-05, 'num_epochs': 40, 'batch_size': 256}
+Compose(
+    Resize(size=256, interpolation=bilinear, max_size=None, antialias=True)
+    RandomCrop(size=(224, 224), padding=None)
+    RandomHorizontalFlip(p=0.5)
+    RandomRotation(degrees=[-30.0, 30.0], interpolation=nearest, expand=False, fill=0)
+    ColorJitter(brightness=(0.3, 1.3), contrast=(0.3, 1.3), saturation=(0.3, 1.3), hue=(-0.2, 0.2))
+    GaussianBlur(kernel_size=(3, 3), sigma=(0.1, 2.0))
+    ToTensor()
+    Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+)
+Epoch 0 took 0:01:16.274985
+Epoch [1/40], Loss:  3.5289
+Eval after epoch 0 took 0:00:02.468339
+Bleu@4: 0.1550479985370943
+CIDEr: 0.4302443703259888
+ROUGE-L: 0.3879208524908374
+New best CIDEr score is 0.4302443703259888
+Saving model at ckpts/kornbuntu_2025-04-06 21:07:31.pth
+Some random captions from the model for the val set:
+['a man is holding a frisbee in the background.']
+['a man is playing a game of a baseball game.']
+['a dog laying on a bed with a teddy bear.']
+['a man is standing in a dirt area.']
+['a plate of food with a sandwich and a plate.']
+Epoch 1 took 0:01:09.655609
+Epoch [2/40], Loss:  2.7196
+Eval after epoch 1 took 0:00:04.956380
+Bleu@4: 0.1746621971685689
+CIDEr: 0.48391273103925
+ROUGE-L: 0.39996853601201354
+New best CIDEr score is 0.48391273103925
+Saving model at ckpts/kornbuntu_2025-04-06 21:07:31.pth
+Some random captions from the model for the val set:
+['a dog is sitting on a green grass covered field.']
+['a bunch of bananas hanging from a tree.']
+['a large clock tower with a large clock tower.']
+['a man riding a horse on a street.']
+['a cat is sitting on a wooden table.']
+Epoch 2 took 0:01:08.771272
+Epoch [3/40], Loss:  2.5399
+Eval after epoch 2 took 0:00:05.046111
+Bleu@4: 0.18320904742931154
+CIDEr: 0.5153598965570464
+ROUGE-L: 0.4052453779540973
+New best CIDEr score is 0.5153598965570464
+Saving model at ckpts/kornbuntu_2025-04-06 21:07:31.pth
+Some random captions from the model for the val set:
+['a bathroom with a sink and a sink.']
+['a man riding a horse on a horse.']
+['a group of people on a beach with a boat.']
+['a man is standing on a skateboard in a parking lot.']
+['a man is holding a wii controller.']
+Epoch 3 took 0:01:06.954885
+Epoch [4/40], Loss:  2.4422
+Eval after epoch 3 took 0:00:04.908772
+Bleu@4: 0.18685786659629414
+CIDEr: 0.5308856065052192
+ROUGE-L: 0.408169189511036
+New best CIDEr score is 0.5308856065052192
+Saving model at ckpts/kornbuntu_2025-04-06 21:07:31.pth
+Some random captions from the model for the val set:
+['a man is holding a wii remote in his hands.']
+['a man is doing a trick on a skateboard.']
+['a white plate topped with a slice of pizza.']
+['a man is sitting on a bed with a laptop.']
+['a bed with a bed and a bed.']
+Epoch 4 took 0:01:12.053021
+Epoch [5/40], Loss:  2.3764
+Eval after epoch 4 took 0:00:04.645694
+Bleu@4: 0.19490268678021877
+CIDEr: 0.5469693960765497
+ROUGE-L: 0.4134452352063681
+New best CIDEr score is 0.5469693960765497
+Saving model at ckpts/kornbuntu_2025-04-06 21:07:31.pth
+Some random captions from the model for the val set:
+['a skier is skiing down a hill.']
+['a plate of food with a bunch of vegetables.']
+['a train is pulling into a station with people waiting to the platform.']
+['a green and white sign sitting on a bench.']
+['a pair of scissors sitting on top of a table.']
+Epoch 5 took 0:01:04.316982
+Epoch [6/40], Loss:  2.3272
+Eval after epoch 5 took 0:00:04.520518
+Bleu@4: 0.18873129027481456
+CIDEr: 0.5394618148429133
+ROUGE-L: 0.41175476185978394
+Some random captions from the model for the val set:
+['a man swinging a bat at a baseball game.']
+['a man sitting at a desk with a laptop computer.']
+['a person riding a wave on a surfboard.']
+['a cat is sitting on a chair with a laptop.']
+['a herd of elephants walking through a field.']
+Epoch 6 took 0:01:06.652115
+Epoch [7/40], Loss:  2.2880
+Eval after epoch 6 took 0:00:05.201737
+Bleu@4: 0.19204324370024312
+CIDEr: 0.5541620423398365
+ROUGE-L: 0.41373608552892455
+New best CIDEr score is 0.5541620423398365
+Saving model at ckpts/kornbuntu_2025-04-06 21:07:31.pth
+Some random captions from the model for the val set:
+['a person on a snowboard in the snow.']
+['a man flying a kite on a beach.']
+['a red bus is parked on the side of the road.']
+['a man eating a sandwich with a fork.']
+['a motorcycle parked on the side of a road.']
+Epoch 7 took 0:01:08.893959
+Epoch [8/40], Loss:  2.2557
+Eval after epoch 7 took 0:00:04.675728
+Bleu@4: 0.19046245012503818
+CIDEr: 0.5503286314791613
+ROUGE-L: 0.41333012054132107
+Some random captions from the model for the val set:
+['a man standing in a field with a frisbee.']
+['a black and white photo of a city street.']
+['a table with a variety of items on it.']
+['a man holding a glass of wine in a mirror.']
+['a large elephant standing in a fenced in area.']
+Epoch 8 took 0:01:04.636279
+Epoch [9/40], Loss:  2.2282
+Eval after epoch 8 took 0:00:04.773252
+Bleu@4: 0.19627397012575018
+CIDEr: 0.5597583143130805
+ROUGE-L: 0.4167812666010609
+New best CIDEr score is 0.5597583143130805
+Saving model at ckpts/kornbuntu_2025-04-06 21:07:31.pth
+Some random captions from the model for the val set:
+['a bench sitting in the middle of a park.']
+['a group of cows are standing in a field.']
+['a man is playing frisbee in the park.']
+['a bathroom with a sink and a mirror.']
+['a boat is docked in a harbor next to a dock.']
+Epoch 9 took 0:01:08.445630
+Epoch [10/40], Loss:  2.2045
+Eval after epoch 9 took 0:00:04.667523
+Bleu@4: 0.20018605682357166
+CIDEr: 0.5681745300011426
+ROUGE-L: 0.41816260096957547
+New best CIDEr score is 0.5681745300011426
+Saving model at ckpts/kornbuntu_2025-04-06 21:07:31.pth
+Some random captions from the model for the val set:
+['a group of people riding on the back of a truck.']
+['a large airplane that is sitting on a runway.']
+['a clock on a building with a clock on it.']
+['a man sitting on a bench with a backpack.']
+['a man holding a tennis racquet on a tennis court.']
+Epoch 10 took 0:01:06.711773
+Epoch [11/40], Loss:  2.1834
+Eval after epoch 10 took 0:00:02.567148
+Bleu@4: 0.19326211029975957
+CIDEr: 0.5514793885981121
+ROUGE-L: 0.4121105891351981
+Some random captions from the model for the val set:
+['a man is skiing down a snowy mountain.']
+['a black and white cat laying on a bed.']
+['a tennis player is swinging his racket at a ball.']
+['a group of sheep grazing on a lush green hillside.']
+['a man and woman are standing next to each other.']
+Epoch 11 took 0:01:07.216150
+Epoch [12/40], Loss:  2.1649
+Eval after epoch 11 took 0:00:04.765919
+Bleu@4: 0.19723732403167477
+CIDEr: 0.5622874906309807
+ROUGE-L: 0.41782108529583784
+Some random captions from the model for the val set:
+['a group of people standing in a room with remotes.']
+['a horse pulling a carriage down a street.']
+['a group of men sitting on a couch.']
+['a cat sitting on a wooden floor next to a wooden table.']
+['a boat that is sitting in the water.']
+Epoch 12 took 0:01:07.216724
+Epoch [13/40], Loss:  2.1480
+Eval after epoch 12 took 0:00:04.985205
+Bleu@4: 0.1962615548230503
+CIDEr: 0.5650509204233917
+ROUGE-L: 0.4156694696594446
+Some random captions from the model for the val set:
+['a bench sitting next to a stone wall with a bench.']
+['a pizza with a lot of meat and vegetables.']
+['a young boy holding a baseball bat in his hand.']
+['a train is pulling into a train station.']
+['a dog chasing a frisbee in a field.']
+Epoch 13 took 0:01:05.504730
+Epoch [14/40], Loss:  2.1330
+Eval after epoch 13 took 0:00:04.932002
+Bleu@4: 0.1964454915574833
+CIDEr: 0.5647486273370248
+ROUGE-L: 0.4168894516645102
+Some random captions from the model for the val set:
+['a large elephant standing next to a fence.']
+['a fire hydrant on a sidewalk next to a building.']
+['a bathroom with a toilet, sink, and shower.']
+['a piece of cake with a knife and fork.']
+['a group of people sitting around a table with wine glasses.']
+Epoch 14 took 0:01:07.766046
+Epoch [15/40], Loss:  2.1192
+Eval after epoch 14 took 0:00:04.817439
+Bleu@4: 0.19201341212000494
+CIDEr: 0.5569067980822503
+ROUGE-L: 0.4138146022324894
+Some random captions from the model for the val set:
+['a black and white dog on a leash on a sidewalk.']
+['a woman is holding a large umbrella over a fence.']
+['a kitchen with a sink, stove, and a sink.']
+['a pizza sitting on top of a wooden cutting board.']
+['a woman holding a teddy bear and a woman holding a teddy bear.']
+Epoch 15 took 0:01:08.735924
+Epoch [16/40], Loss:  2.1066
+Eval after epoch 15 took 0:00:02.315171
+Bleu@4: 0.1967769835098921
+CIDEr: 0.5633716831173461
+ROUGE-L: 0.414952013465854
+Some random captions from the model for the val set:
+['a man riding a skateboard down a ramp.']
+['a boat is on the water near the ocean.']
+['a white toilet sitting next to a white toilet.']
+['a woman is walking down the street at night.']
+['a table with plates of food and a glass of wine.']
+Epoch 16 took 0:01:07.173132
+Epoch [17/40], Loss:  2.0952
+Eval after epoch 16 took 0:00:04.702368
+Bleu@4: 0.195566300604419
+CIDEr: 0.5648441093449214
+ROUGE-L: 0.4168298812869376
+Some random captions from the model for the val set:
+['a motorcycle is parked in front of a building.']
+["a clock tower with a clock on it's side."]
+['a bird flying over the water with a bird in the water.']
+['a man riding a wave on top of a surfboard.']
+['a horse standing in a field with a mountain in the background.']
+Epoch 17 took 0:01:10.657581
+Epoch [18/40], Loss:  2.0845
+Eval after epoch 17 took 0:00:04.763083
+Bleu@4: 0.1941218284520011
+CIDEr: 0.5618682238547862
+ROUGE-L: 0.41425513955389787
+Some random captions from the model for the val set:
+['a man riding a horse on top of a hill.']
+['a man riding a motorcycle down a road.']
+['a plate of food with a fork and a fork.']
+['a baseball player is getting ready to throw a ball.']
+['a living room with a fireplace and a fireplace.']
+Epoch 18 took 0:01:04.526048
+Epoch [19/40], Loss:  2.0748
+Eval after epoch 18 took 0:00:04.695229
+Bleu@4: 0.19841373225203782
+CIDEr: 0.573313024474095
+ROUGE-L: 0.41742774069262667
+New best CIDEr score is 0.573313024474095
+Saving model at ckpts/kornbuntu_2025-04-06 21:07:31.pth
+Some random captions from the model for the val set:
+['a man in a black shirt and black shorts playing a game of baseball.']
+['a person sitting in a chair with a laptop in front of a window.']
+['a street at night with a lot of lights on it.']
+['a man riding a wave on top of a surfboard.']
+['a woman in a pink dress is brushing her teeth.']
+Epoch 19 took 0:01:08.706966
+Epoch [20/40], Loss:  2.0659
+Eval after epoch 19 took 0:00:04.839363
+Bleu@4: 0.19561692155867688
+CIDEr: 0.5700185930193502
+ROUGE-L: 0.41675627354038314
+Some random captions from the model for the val set:
+['a person riding a surf board on a wave.']
+['a living room with a couch, chair, and a table.']
+['a woman walking down a sidewalk with a dog.']
+['a bathroom with a toilet and a sink.']
+['a man standing under an umbrella on a patio.']
+Epoch 20 took 0:01:06.766891
+Epoch [21/40], Loss:  2.0577
+Eval after epoch 20 took 0:00:04.387224
+Bleu@4: 0.19533821913689997
+CIDEr: 0.5668208088106298
+ROUGE-L: 0.4159108554850776
+Some random captions from the model for the val set:
+['a man and woman are standing next to each other.']
+['a green and white fire hydrant sitting in the grass.']
+['a toilet with a black lid and a black lid.']
+['a man riding a skateboard up the side of a ramp.']
+['a couple of people walking on a city street.']
+Epoch 21 took 0:01:05.782251
+Epoch [22/40], Loss:  2.0501
+Eval after epoch 21 took 0:00:04.675736
+Bleu@4: 0.19983817253384134
+CIDEr: 0.5728432557225768
+ROUGE-L: 0.4177474481667237
+Some random captions from the model for the val set:
+['a cow standing in a field next to a fence.']
+['a large building with a large sign on the side of it.']
+['a bunch of fruit is sitting on a table.']
+['a dog is standing on a rock in the ocean.']
+['a kitchen with a refrigerator, stove, and a window.']
+Epoch 22 took 0:01:09.530068
+Epoch [23/40], Loss:  2.0432
+Eval after epoch 22 took 0:00:04.748365
+Bleu@4: 0.19663413831221394
+CIDEr: 0.5671696294791654
+ROUGE-L: 0.4171268162370172
+Some random captions from the model for the val set:
+['a train is shown with a bag on it.']
+['a street scene with a bus stop and a bus stop.']
+['a man is playing tennis on a tennis court.']
+['a man is surfing on a wave in the ocean.']
+['a yellow and blue train is parked on the tracks.']
+Epoch 23 took 0:01:07.195863
+Epoch [24/40], Loss:  2.0368
+Eval after epoch 23 took 0:00:02.334585
+Bleu@4: 0.193820857663966
+CIDEr: 0.5689958357966324
+ROUGE-L: 0.4156693615443025
+Some random captions from the model for the val set:
+['a woman laying on a bed with a stuffed animal.']
+['a street sign on a street corner in the city.']
+['a kitchen with a refrigerator, stove, and a refrigerator.']
+['a green bus is parked on the side of a road.']
+['a banana and a banana on a table.']
+Epoch 24 took 0:01:06.478396
+Epoch [25/40], Loss:  2.0311
+Eval after epoch 24 took 0:00:04.856764
+Bleu@4: 0.1977917323040822
+CIDEr: 0.56845329754826
+ROUGE-L: 0.4174544056226212
+Some random captions from the model for the val set:
+['a dog is looking at a person with a dog.']
+['a bird sitting on a branch of a bird feeder.']
+['a train is parked at the station in a garage.']
+['a man riding a wave on top of a surfboard.']
+['a bus is parked on the side of the road.']
+Epoch 25 took 0:01:10.748612
+Epoch [26/40], Loss:  2.0259
+Eval after epoch 25 took 0:00:04.763795
+Bleu@4: 0.1966236561099196
+CIDEr: 0.5696091047374428
+ROUGE-L: 0.41771893142035926
+Some random captions from the model for the val set:
+['a woman sitting on a couch with a laptop.']
+['a bus is parked on the side of the road.']
+['a train that is sitting on the tracks.']
+['a man riding on the back of a elephant.']
+['a kitchen with a stove, oven, microwave and a stove.']
+Epoch 26 took 0:01:06.742077
+Epoch [27/40], Loss:  2.0211
+Eval after epoch 26 took 0:00:02.285741
+Bleu@4: 0.19728124843357758
+CIDEr: 0.5728227962771709
+ROUGE-L: 0.4187855733710011
+Some random captions from the model for the val set:
+['a woman is flying a kite in a field.']
+['a baseball player is getting ready to hit a ball.']
+['a person skiing down a snowy hill with a person on skis.']
+['a table with a plate of food and a cup of coffee.']
+['a white car is parked in a train station.']
+Epoch 27 took 0:01:08.787109
+Epoch [28/40], Loss:  2.0169
+Eval after epoch 27 took 0:00:04.834140
+Bleu@4: 0.1968950395346478
+CIDEr: 0.5699008875288555
+ROUGE-L: 0.4170680066281516
+Some random captions from the model for the val set:
+['a tray of food with a knife and a fork.']
+['a bus driving down a street next to a building.']
+['a man riding skis down a snow covered slope.']
+['a refrigerator with a door open and a refrigerator.']
+['a man in a wet suit riding a surfboard on a wave.']
+Epoch 28 took 0:01:08.012816
+Epoch [29/40], Loss:  2.0130
+Eval after epoch 28 took 0:00:04.685420
+Bleu@4: 0.19879153834671823
+CIDEr: 0.5738933234945882
+ROUGE-L: 0.4170153318864187
+New best CIDEr score is 0.5738933234945882
+Saving model at ckpts/kornbuntu_2025-04-06 21:07:31.pth
+Some random captions from the model for the val set:
+['a group of people flying kites in a field.']
+['a person on skis is going down a snowy hill.']
+['a man standing in front of a truck with a surfboard.']
+['a refrigerator with a door open and a door.']
+['a man riding skis on top of a snow covered slope.']
+Epoch 29 took 0:01:07.962239
+Epoch [30/40], Loss:  2.0097
+Eval after epoch 29 took 0:00:02.034618
+Bleu@4: 0.19732676520413514
+CIDEr: 0.5742565645586701
+ROUGE-L: 0.41724406353984606
+New best CIDEr score is 0.5742565645586701
+Saving model at ckpts/kornbuntu_2025-04-06 21:07:31.pth
+Some random captions from the model for the val set:
+['a man in a suit and tie with a blue shirt.']
+['a clock on a wall with a clock on it.']
+['a table topped with plates of food and a pizza.']
+['a plate with a slice of cake on it.']
+['a hand holding a hot dog in a bun.']
+Epoch 30 took 0:01:09.358072
+Epoch [31/40], Loss:  2.0067
+Eval after epoch 30 took 0:00:04.850576
+Bleu@4: 0.19738843017740146
+CIDEr: 0.573243249377067
+ROUGE-L: 0.41859013905124565
+Some random captions from the model for the val set:
+['a group of people riding horses on a city street.']
+['a person on a motorcycle in the street.']
+['a group of people standing on a beach flying kites.']
+['a person riding a bike down a street in a forest.']
+['a dog laying on a couch with a dog laying on it.']
+Epoch 31 took 0:01:09.737589
+Epoch [32/40], Loss:  2.0042
+Eval after epoch 31 took 0:00:04.885193
+Bleu@4: 0.1973842132488059
+CIDEr: 0.5742490650591784
+ROUGE-L: 0.4177516116945714
+Some random captions from the model for the val set:
+['a room with a bed, a desk and a television.']
+['a man and a woman are standing next to each other.']
+['a man in a suit and tie is wearing a suit and tie.']
+['a bench in the middle of a park.']
+['a red fire hydrant on a sidewalk next to a street.']
+Epoch 32 took 0:01:04.989505
+Epoch [33/40], Loss:  2.0020
+Eval after epoch 32 took 0:00:04.873672
+Bleu@4: 0.1999753359672862
+CIDEr: 0.5776786881699761
+ROUGE-L: 0.4180886935723485
+New best CIDEr score is 0.5776786881699761
+Saving model at ckpts/kornbuntu_2025-04-06 21:07:31.pth
+Some random captions from the model for the val set:
+['a group of people standing in a field with a frisbee.']
+['a small bird perched on a wooden post.']
+['a man and a woman sitting at a table with a laptop.']
+['a pizza sitting on top of a table.']
+['a small white boat floating on top of a body of water.']
+Epoch 33 took 0:01:08.046787
+Epoch [34/40], Loss:  2.0001
+Eval after epoch 33 took 0:00:05.068156
+Bleu@4: 0.19900690781849317
+CIDEr: 0.5765176947546932
+ROUGE-L: 0.4180929767602884
+Some random captions from the model for the val set:
+['a group of people riding bikes on a street.']
+['a banana peel and a banana on a table.']
+['a snow covered mountain with a mountain top on it.']
+['a young man riding a skateboard on top of a cement block.']
+['a train station with a train on the tracks.']
+Epoch 34 took 0:01:15.417733
+Epoch [35/40], Loss:  1.9986
+Eval after epoch 34 took 0:00:02.248468
+Bleu@4: 0.19806535837843603
+CIDEr: 0.5734675323007515
+ROUGE-L: 0.4174704718642117
+Some random captions from the model for the val set:
+['a man on a surfboard riding a wave.']
+['a group of people holding umbrellas and standing under a tent.']
+['a group of zebras standing in the grass.']
+['a forest with a forest on the back of it.']
+['a person on skis is standing in the snow.']
+Epoch 35 took 0:01:08.859712
+Epoch [36/40], Loss:  1.9974
+Eval after epoch 35 took 0:00:04.808863
+Bleu@4: 0.19774762547099053
+CIDEr: 0.5727107919618265
+ROUGE-L: 0.41717370244944685
+Some random captions from the model for the val set:
+['a little girl sitting on a chair with a stuffed animal.']
+['a small dog is sitting on a laptop computer.']
+['a man wearing a tie and a white shirt.']
+['a baby elephant standing next to a baby elephant.']
+['a group of people standing around a field.']
+Epoch 36 took 0:01:08.890309
+Epoch [37/40], Loss:  1.9965
+Eval after epoch 36 took 0:00:04.626357
+Bleu@4: 0.197103496381909
+CIDEr: 0.5743311178641727
+ROUGE-L: 0.41771388447045193
+Some random captions from the model for the val set:
+['a clock is shown on a wall with a clock.']
+['a man is flying a kite on a beach.']
+['a baby elephant walking next to a baby elephant.']
+['a blue and white truck parked on a road.']
+['a truck that is sitting in the grass.']
+Epoch 37 took 0:01:13.767724
+Epoch [38/40], Loss:  1.9958
+Eval after epoch 37 took 0:00:05.078473
+Bleu@4: 0.19759301116498418
+CIDEr: 0.5744690614017471
+ROUGE-L: 0.4175685584505276
+Some random captions from the model for the val set:
+['a baseball player swinging a bat at a ball.']
+['a fire hydrant is on the side of a road.']
+['a group of horses standing in a field near a fence.']
+['a bunch of luggage that are in the snow.']
+['a bird is perched on a branch in the air.']
+Epoch 38 took 0:01:15.513269
+Epoch [39/40], Loss:  1.9953
+Eval after epoch 38 took 0:00:04.760324
+Bleu@4: 0.1976502686053542
+CIDEr: 0.573687703279706
+ROUGE-L: 0.41729583278970783
+Some random captions from the model for the val set:
+['a market with a lot of fruit and vegetables in it.']
+['a group of people riding surfboards in the water.']
+['a man is riding a horse on the beach.']
+['a woman is standing in front of a toilet.']
+['a cat is looking out a window at a window.']
+Epoch 39 took 0:01:15.860415
+Epoch [40/40], Loss:  1.9951
+Eval after epoch 39 took 0:00:04.982064
+Bleu@4: 0.19787898591616024
+CIDEr: 0.5743723811814396
+ROUGE-L: 0.4175794650284399
+Some random captions from the model for the val set:
+['a white stove top oven sitting next to a white sink.']
+['a cat is curled up in a sink.']
+['a group of horses pulling a wagon with a man on it.']
+['a table with two plates of food and drinks.']
+['a giraffe is standing in the middle of a field.']
